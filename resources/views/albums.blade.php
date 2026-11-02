@@ -14,7 +14,7 @@
     <div class="albums">
         @foreach($albums as $album)
             <div class="album">
-                <h2>{{ $album->titre }}</h2>
+                <h2><a href="/album/{{ $album->id }}">{{ $album->titre }}</a></h2>
                 <p>Créé le {{ \Carbon\Carbon::parse($album->creation)->format('d/m/Y') }}</p>
             </div>
         @endforeach
