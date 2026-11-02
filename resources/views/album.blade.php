@@ -22,4 +22,11 @@
             </div>
         @endforeach
     </div>
+
+    <div id="grande-photo" class="grande-photo" hidden>
+        <button id="fermer" type="button" aria-label="Fermer">&times;</button>
+        <img id="grande-image" src="" alt="">
+    </div>
+
+    <script src="/js/photos.js"></script>
 @endsection
