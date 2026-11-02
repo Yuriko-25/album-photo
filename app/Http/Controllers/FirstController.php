@@ -39,8 +39,56 @@ class FirstController extends Controller
             $ordre = 'titre';
         }
 
-        $photos = DB::select("SELECT * FROM photos WHERE album_id=? ORDER BY $ordre", [$id]);
+        // Filtres choisis dans le formulaire (vides si on n'a rien choisi)
+        $tag = $request->query('tag');
+        $recherche = $request->query('recherche');
 
-        return view('album', ['album' => $album, 'photos' => $photos, 'tri' => $tri]);
+        // On construit la requête petit à petit, selon les filtres utilisés
+        $sql = "SELECT DISTINCT p.* FROM photos p";
+        $parametres = [];
+
+        if (!empty($tag)) {
+            $sql .= " INNER JOIN possede_tag pt ON pt.photo_id = p.id AND pt.tag_id = ?";
+            $parametres[] = $tag;
+        }
+
+        $sql .= " WHERE p.album_id = ?";
+        $parametres[] = $id;
+
+        if (!empty($recherche)) {
+            $sql .= " AND p.titre LIKE ?";
+            $parametres[] = "%" . $recherche . "%";
+        }
+
+        $photos = DB::select("$sql ORDER BY $ordre", $parametres);
+
+        // Les étiquettes de chaque photo, pour les afficher sur sa carte
+        foreach ($photos as $photo) {
+            $photo->tags = DB::select(
+                "SELECT t.* FROM tags t
+                 INNER JOIN possede_tag pt ON pt.tag_id = t.id
+                 WHERE pt.photo_id = ?",
+                [$photo->id]
+            );
+        }
+
+        // Les étiquettes proposées dans le filtre : celles des photos de l'album
+        $tags = DB::select(
+            "SELECT DISTINCT t.* FROM tags t
+             INNER JOIN possede_tag pt ON pt.tag_id = t.id
+             INNER JOIN photos p ON p.id = pt.photo_id
+             WHERE p.album_id = ?
+             ORDER BY t.nom",
+            [$id]
+        );
+
+        return view('album', [
+            'album' => $album,
+            'photos' => $photos,
+            'tags' => $tags,
+            'tri' => $tri,
+            'tag' => $tag,
+            'recherche' => $recherche,
+        ]);
     }
 }
