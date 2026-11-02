@@ -1,0 +1,9 @@
+/* Mise en page de base : le thème espace viendra à l'étape 7 */
+body { font-family: Arial, sans-serif; margin: 0; }
+header { padding: 1rem 2rem; border-bottom: 1px solid #ccc; }
+header a { font-weight: bold; text-decoration: none; color: inherit; }
+main { padding: 2rem; }
+.tri a { margin-right: 0.5rem; }
+.tri a.actif { font-weight: bold; }
+.albums { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+.album { padding: 1rem; border: 1px solid #ccc; border-radius: 8px; }
